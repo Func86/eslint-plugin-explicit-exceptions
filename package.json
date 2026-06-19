@@ -1,7 +1,7 @@
 {
-  "name": "eslint-plugin-explicit-exceptions",
+  "name": "@libreflare/eslint-plugin-explicit-exceptions",
   "type": "commonjs",
-  "version": "0.13.3",
+  "version": "0.13.3-ts6.0",
   "description": "ESLint rules for explicitly handling exceptions",
   "main": "./src/plugin.js",
   "types": "./dist/plugin.d.ts",
@@ -40,6 +40,9 @@
   },
   "license": "MIT",
   "packageManager": "pnpm@10.10.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types-with-exceptions/lib": "0.0.0-dev.0",
     "@types-with-exceptions/node": "0.0.0-dev.0",

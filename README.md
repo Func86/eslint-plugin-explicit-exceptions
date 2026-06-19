@@ -1,6 +1,6 @@
-# eslint-plugin-explicit-exceptions
+# @libreflare/eslint-plugin-explicit-exceptions
 
-[![NPM Version](https://img.shields.io/npm/v/eslint-plugin-explicit-exceptions)](https://www.npmjs.com/package/eslint-plugin-explicit-exceptions)
+[![NPM Version](https://img.shields.io/npm/v/@libreflare/eslint-plugin-explicit-exceptions)](https://www.npmjs.com/package/@libreflare/eslint-plugin-explicit-exceptions)
 [![Coverage](https://raw.githubusercontent.com/Xvezda/eslint-plugin-explicit-exceptions/refs/heads/_meta/coverage.svg)](https://github.com/Xvezda/eslint-plugin-explicit-exceptions/actions/workflows/test.yml)
 [![Test](https://github.com/Xvezda/eslint-plugin-explicit-exceptions/actions/workflows/test.yml/badge.svg)](https://github.com/Xvezda/eslint-plugin-explicit-exceptions/actions/workflows/test.yml)
 
@@ -127,7 +127,7 @@ npm install --save-dev eslint @eslint/js typescript typescript-eslint
 
 Install plugin
 ```
-npm install --save-dev eslint-plugin-explicit-exceptions
+npm install --save-dev @libreflare/eslint-plugin-explicit-exceptions
 ```
 
 > [!WARNING]
@@ -175,7 +175,7 @@ Create `eslint.config.mjs`
 
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import explicitExceptionsLint from 'eslint-plugin-explicit-exceptions';
+import explicitExceptionsLint from '@libreflare/eslint-plugin-explicit-exceptions';
 
 export default tseslint.config(
   eslint.configs.recommended,
