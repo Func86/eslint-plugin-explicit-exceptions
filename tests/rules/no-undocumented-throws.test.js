@@ -348,7 +348,7 @@ ruleTester.run(
             /**
              * @throws {Promise<Error>}
              */
-            async [name]: function () {
+            async [name]() {
               throw new Error('foo');
             },
           };

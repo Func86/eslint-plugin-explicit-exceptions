@@ -6,7 +6,7 @@ const { strict: assert } = require('node:assert');
 
 const { TSESLint, AST_NODE_TYPES } = require('@typescript-eslint/utils');
 const { simpleTraverse } = require('@typescript-eslint/typescript-estree');
-const { parseForESLint, createProgram } = require('@typescript-eslint/parser');
+const { parseForESLint } = require('@typescript-eslint/parser');
 
 const {
   TypeMap,
@@ -1563,7 +1563,6 @@ const foo = () => {
 });
 
 const tsconfigRootDir = __dirname;
-const program = createProgram('tsconfig.json', tsconfigRootDir);
 
 /**
  * @param {string} code
@@ -1571,11 +1570,11 @@ const program = createProgram('tsconfig.json', tsconfigRootDir);
 function parse(code) {
   const parsed = parseForESLint(code, {
     tsconfigRootDir,
-    filePath: __filename,
-    programs: [program],
-    projectService: true,
+    filePath: `${tsconfigRootDir}/fixture.ts`,
+    projectService: {
+      allowDefaultProject: ['*.ts', '*.js'],
+    },
     errorOnUnknownASTType: true,
-    project: true,
     comment: true,
     loc: true,
     range: true,

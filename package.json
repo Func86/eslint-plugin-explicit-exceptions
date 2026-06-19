@@ -43,15 +43,16 @@
   "devDependencies": {
     "@types-with-exceptions/lib": "0.0.0-dev.0",
     "@types-with-exceptions/node": "0.0.0-dev.0",
-    "@typescript-eslint/parser": "^8.32.1",
-    "@typescript-eslint/rule-tester": "^8.32.1",
-    "@typescript-eslint/type-utils": "^8.32.1",
-    "@typescript-eslint/typescript-estree": "^8.33.0",
-    "@typescript-eslint/utils": "^8.32.1",
-    "typescript-eslint": "^8.32.1"
+    "@typescript-eslint/parser": "^8.61.1",
+    "@typescript-eslint/rule-tester": "^8.61.1",
+    "@typescript-eslint/type-utils": "^8.61.1",
+    "@typescript-eslint/typescript-estree": "^8.61.1",
+    "@typescript-eslint/utils": "^8.61.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1"
   },
   "peerDependencies": {
     "eslint": "^9.27.0",
-    "typescript": "^5.8.3"
+    "typescript": ">=5.8.3 <6.1.0"
   }
 }
