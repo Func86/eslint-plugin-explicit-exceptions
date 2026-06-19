@@ -1,7 +1,7 @@
 {
   "name": "@libreflare/eslint-plugin-explicit-exceptions",
   "type": "commonjs",
-  "version": "0.13.3-ts6.0",
+  "version": "0.13.4-libreflare.0",
   "description": "ESLint rules for explicitly handling exceptions",
   "main": "./src/plugin.js",
   "types": "./dist/plugin.d.ts",
@@ -51,11 +51,12 @@
     "@typescript-eslint/type-utils": "^8.61.1",
     "@typescript-eslint/typescript-estree": "^8.61.1",
     "@typescript-eslint/utils": "^8.61.1",
+    "eslint": "^10.5.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.61.1"
   },
   "peerDependencies": {
-    "eslint": "^9.27.0",
+    "eslint": "^9.27.0 || ^10.0.0",
     "typescript": ">=5.8.3 <6.1.0"
   }
 }

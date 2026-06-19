@@ -1,6 +1,13 @@
 "use strict";
 
+const { name, version } = require('../package.json');
+
 const plugin = {
+  meta: {
+    name,
+    version,
+    namespace: 'explicit-exceptions',
+  },
   configs: {
     get recommendedTypeChecked() {
       return recommendedTypeChecked;
