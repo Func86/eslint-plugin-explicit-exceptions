@@ -1,7 +1,7 @@
 {
   "name": "@libreflare/eslint-plugin-explicit-exceptions",
   "type": "commonjs",
-  "version": "0.13.4-libreflare.0",
+  "version": "0.13.4-libreflare.1",
   "description": "ESLint rules for explicitly handling exceptions",
   "main": "./src/plugin.js",
   "types": "./dist/plugin.d.ts",
@@ -43,14 +43,16 @@
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "@typescript-eslint/type-utils": "^8.61.1",
+    "@typescript-eslint/utils": "^8.61.1"
+  },
   "devDependencies": {
     "@types-with-exceptions/lib": "0.0.0-dev.0",
     "@types-with-exceptions/node": "0.0.0-dev.0",
     "@typescript-eslint/parser": "^8.61.1",
     "@typescript-eslint/rule-tester": "^8.61.1",
-    "@typescript-eslint/type-utils": "^8.61.1",
     "@typescript-eslint/typescript-estree": "^8.61.1",
-    "@typescript-eslint/utils": "^8.61.1",
     "eslint": "^10.5.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.61.1"
