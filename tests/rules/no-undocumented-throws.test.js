@@ -1367,6 +1367,54 @@ ruleTester.run(
       },
       {
         code: `
+          class Adapter {
+            constructor(options: { read: () => void }) {}
+          }
+
+          /**
+           * @throws {Error}
+           */
+          function throwingRead() {
+            throw new Error();
+          }
+
+          class Coordinator {
+            constructor() {
+              new Adapter({
+                read: () => throwingRead(),
+              });
+            }
+          }
+        `,
+        output: `
+          class Adapter {
+            constructor(options: { read: () => void }) {}
+          }
+
+          /**
+           * @throws {Error}
+           */
+          function throwingRead() {
+            throw new Error();
+          }
+
+          class Coordinator {
+            constructor() {
+              new Adapter({
+                /**
+                 * @throws {Error}
+                 */
+                read: () => throwingRead(),
+              });
+            }
+          }
+        `,
+        errors: [
+          { messageId: 'missingThrowsTag' },
+        ],
+      },
+      {
+        code: `
           function factory() {
             function inner() {
               throw new Error();

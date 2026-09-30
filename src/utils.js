@@ -678,70 +678,26 @@ const findNodeToComment = (node) => {
       }
       if (!isFunctionNode(node)) return null;
 
-      return (
-        /**
-         * @example
-         * ```
-         * class Klass {
-         *   // here
-         *   target() { ... }
-         *   //    ^ node
-         * }
-         * ```
-         */
-        findParent(node, (n) => n.type === AST_NODE_TYPES.MethodDefinition) ??
-        /**
-         * @example
-         * ```
-         * class Klass {
-         *   // here
-         *   target = () => { ... }
-         *   //       ^ node
-         * }
-         * ```
-         */
-        findParent(node, (n) => n.type === AST_NODE_TYPES.PropertyDefinition) ??
-        /**
-         * @example
-         * ```
-         * const obj = {
-         *   // here
-         *   target: () => { ... },
-         *   //      ^ node
-         * };
-         * ```
-         */
-        findParent(node, (n) => n.type === AST_NODE_TYPES.Property) ??
-        /**
-         * @example
-         * ```
-         * // here
-         * export const target = () => { ... };
-         * //                    ^ node
-         * ```
-         */
-        findParent(node, (n) => n.type === AST_NODE_TYPES.ExportNamedDeclaration) ??
-        /**
-         * @example
-         * ```
-         * // here
-         * const target = () => { ... };
-         * //             ^ node
-         * ```
-         */
-        findParent(node, (n) => n.type === AST_NODE_TYPES.VariableDeclaration) ??
-        /**
-         * @example
-         * ```
-         * function factory() {
-         *   // here
-         *   return function target() { ... };
-         *   //     ^ node
-         * }
-         * ```
-         */
-        findParent(node, (n) => n.type === AST_NODE_TYPES.ReturnStatement)
+      // Do not search past an enclosing function: its declaration belongs to
+      // that function, not to a callback nested inside it.
+      const owner = findParent(node, (n) =>
+        isFunctionNode(n) ||
+        n.type === AST_NODE_TYPES.MethodDefinition ||
+        n.type === AST_NODE_TYPES.PropertyDefinition ||
+        n.type === AST_NODE_TYPES.Property ||
+        n.type === AST_NODE_TYPES.VariableDeclaration ||
+        n.type === AST_NODE_TYPES.ReturnStatement
       );
+      if (owner && isFunctionNode(owner)) return node;
+
+      // Exported variable-assigned functions are documented at the export.
+      if (
+        owner?.type === AST_NODE_TYPES.VariableDeclaration &&
+        owner.parent?.type === AST_NODE_TYPES.ExportNamedDeclaration
+      ) {
+        return owner.parent;
+      }
+      return owner;
     }
     default:
       return null;
