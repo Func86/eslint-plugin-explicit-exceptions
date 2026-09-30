@@ -988,8 +988,261 @@ ruleTester.run(
           }
         `,
       },
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          /** @throws {Promise<Error>} */
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = mayReject();
+            }
+            return await pending;
+          }
+        `,
+      },
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          async function example(): Promise<void> {
+            const returned = Promise.resolve();
+            if (Math.random() > 0.5) {
+              const unused = mayReject();
+            }
+            return returned;
+          }
+        `,
+      },
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          /** @throws {Promise<Error>} */
+          async function example(): Promise<void> {
+            await mayReject();
+          }
+        `,
+      },
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          async function example(): Promise<void> {
+            try {
+              await mayReject();
+            } catch {}
+          }
+        `,
+      },
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = mayReject();
+            }
+            try {
+              await pending;
+            } catch {}
+          }
+        `,
+      },
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          function ignore(_pending: Promise<void>): Promise<void> {
+            return Promise.resolve();
+          }
+
+          async function direct(): Promise<void> {
+            await ignore(mayReject());
+          }
+
+          async function assigned(): Promise<void> {
+            const pending = mayReject();
+            await ignore(pending);
+          }
+        `,
+      },
     ],
     invalid: [
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          async function example(): Promise<void> {
+            await mayReject();
+          }
+        `,
+        output: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          /**
+           * @throws {Promise<Error>}
+           */
+          async function example(): Promise<void> {
+            await mayReject();
+          }
+        `,
+        errors: [{ messageId: 'missingThrowsTag' }],
+      },
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = mayReject();
+            }
+            await pending;
+          }
+        `,
+        output: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          /**
+           * @throws {Promise<Error>}
+           */
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = mayReject();
+            }
+            await pending;
+          }
+        `,
+        errors: [{ messageId: 'missingThrowsTag' }],
+      },
+      {
+        code: `
+          async function example(): Promise<void> {
+            await new Promise<void>((resolve, reject) => {
+              reject(new Error('failure'));
+            });
+          }
+        `,
+        output: `
+          /**
+           * @throws {Promise<Error>}
+           */
+          async function example(): Promise<void> {
+            await new Promise<void>((resolve, reject) => {
+              reject(new Error('failure'));
+            });
+          }
+        `,
+        errors: [{ messageId: 'missingThrowsTag' }],
+      },
+      {
+        code: `
+          async function example(): Promise<void> {
+            await Promise.resolve().then(() => {
+              throw new Error('failure');
+            });
+          }
+        `,
+        output: `
+          /**
+           * @throws {Promise<Error>}
+           */
+          async function example(): Promise<void> {
+            await Promise.resolve().then(() => {
+              throw new Error('failure');
+            });
+          }
+        `,
+        errors: [{ messageId: 'missingThrowsTag' }],
+      },
+      {
+        code: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = mayReject();
+            }
+            return await pending;
+          }
+        `,
+        output: `
+          /** @throws {Promise<Error>} */
+          async function mayReject(): Promise<void> {
+            throw new Error('failure');
+          }
+
+          /**
+           * @throws {Promise<Error>}
+           */
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = mayReject();
+            }
+            return await pending;
+          }
+        `,
+        errors: [{ messageId: 'missingThrowsTag' }],
+      },
+      {
+        code: `
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = new Promise<void>((resolve, reject) => {
+                reject(new Error('failure'));
+              });
+            }
+            return await pending;
+          }
+        `,
+        output: `
+          /**
+           * @throws {Promise<Error>}
+           */
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = new Promise<void>((resolve, reject) => {
+                reject(new Error('failure'));
+              });
+            }
+            return await pending;
+          }
+        `,
+        errors: [{ messageId: 'missingThrowsTag' }],
+      },
       {
         code: `
           function foo() {

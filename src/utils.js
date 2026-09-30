@@ -900,6 +900,71 @@ const isNodeReturned = (node) => {
   );
 };
 
+/**
+ * Follow then/finally calls to the outer promise expression.
+ *
+ * @private
+ * @param {import('@typescript-eslint/utils').TSESTree.Node} node
+ * @returns {import('@typescript-eslint/utils').TSESTree.Node}
+ */
+const getPromiseChainEnd = (node) => {
+  while (
+    node.parent?.type === AST_NODE_TYPES.MemberExpression &&
+    node.parent.object === node &&
+    node.parent.property.type === AST_NODE_TYPES.Identifier &&
+    (node.parent.property.name === 'then' ||
+      node.parent.property.name === 'finally') &&
+    node.parent.parent?.type === AST_NODE_TYPES.CallExpression &&
+    node.parent.parent.callee === node.parent
+  ) {
+    node = node.parent.parent;
+  }
+  return node;
+};
+
+/**
+ * Check whether a promise is awaited directly or through a then/finally chain.
+ *
+ * @public
+ * @param {import('@typescript-eslint/utils').TSESTree.Node} node
+ * @returns {boolean}
+ */
+const isNodeAwaited = (node) =>
+  getPromiseChainEnd(node).parent?.type === AST_NODE_TYPES.AwaitExpression;
+
+/**
+ * Check whether a promise assigned to a variable is returned or awaited by the same function.
+ * Resolve the written variable so reads outside the assignment's block are included.
+ *
+ * @public
+ * @param {Readonly<import('@typescript-eslint/utils').TSESLint.SourceCode>} sourceCode
+ * @param {import('@typescript-eslint/utils').TSESTree.Node} node
+ * @returns {boolean}
+ */
+const isAssignedPromisePropagated = (sourceCode, node) => {
+  node = getPromiseChainEnd(node);
+  const parent = node.parent;
+  const assignedNode =
+    parent?.type === AST_NODE_TYPES.AssignmentExpression && parent.right === node
+      ? parent.left
+      : parent?.type === AST_NODE_TYPES.VariableDeclarator && parent.init === node
+        ? parent.id
+        : null;
+
+  if (assignedNode?.type !== AST_NODE_TYPES.Identifier) return false;
+
+  const writtenReference = sourceCode.getScope(assignedNode)
+    .references.find(ref => ref.identifier === assignedNode);
+  const currentFunction = findClosestFunctionNode(node);
+
+  return writtenReference?.resolved?.references.some(ref =>
+    ref.isRead() &&
+    findClosestFunctionNode(ref.identifier) === currentFunction &&
+    (!!findClosest(ref.identifier, isNodeReturned) ||
+      isNodeAwaited(ref.identifier))
+  ) ?? false;
+};
+
 module.exports = {
   TypeMap,
   getFirst,
@@ -930,6 +995,8 @@ module.exports = {
   isInHandledContext,
   isInAsyncHandledContext,
   isNodeReturned,
+  isNodeAwaited,
+  isAssignedPromisePropagated,
   isGeneratorLike,
   isPromiseType,
   isPromiseConstructorCallbackNode,

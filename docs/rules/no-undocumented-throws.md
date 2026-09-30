@@ -1,6 +1,7 @@
 # `no-undocumented-throws`
 
 This rule reports any function containing a throw statement that is not documented with a `@throws` (or `@exception`) tag in its JSDoc.
+It also reports a missing tag when a promise with a documented rejection is returned or awaited, including through a variable assigned inside a nested block.
 
 ## Fixer
 

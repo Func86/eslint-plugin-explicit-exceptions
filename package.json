@@ -1,7 +1,7 @@
 {
   "name": "@libreflare/eslint-plugin-explicit-exceptions",
   "type": "commonjs",
-  "version": "0.13.4-libreflare.2",
+  "version": "0.13.4-libreflare.3",
   "description": "ESLint rules for explicitly handling exceptions",
   "main": "./src/plugin.js",
   "types": "./dist/plugin.d.ts",

@@ -12,6 +12,8 @@ const {
   isInHandledContext,
   isInAsyncHandledContext,
   isNodeReturned,
+  isNodeAwaited,
+  isAssignedPromisePropagated,
   isGeneratorLike,
   isPromiseType,
   isPromiseConstructorCallbackNode,
@@ -605,26 +607,23 @@ module.exports = createRule({
         !isThenableCallback
       ) return;
 
-      const isPromiseReturned =
+      const isPromisePropagated =
         // Return immediately
         (isPromiseConstructorCallback &&
           node.parent.type === AST_NODE_TYPES.NewExpression &&
-          isNodeReturned(node.parent.parent)
+          !!findClosest(node.parent, isNodeReturned)
         ) ||
         (isThenableCallback && findParent(node, n =>
           n.type === AST_NODE_TYPES.CallExpression &&
           isNodeReturned(n)
         )) ||
-        // Promise is assigned and returned
-        sourceCode.getScope(node.parent)
-          ?.references
-          .map(ref => ref.identifier)
-          .some(n => findClosest(n, isNodeReturned));
+        isNodeAwaited(node.parent) ||
+        isAssignedPromisePropagated(sourceCode, node.parent);
 
-      if (!isPromiseReturned) return;
+      if (!isPromisePropagated) return;
 
       /**
-       * Find function where promise is actually returned.
+       * Find function whose promise propagates the rejection.
        */ 
       let promiseReturningFunction = findClosestFunctionNode(node.parent);
       while (
@@ -921,4 +920,3 @@ module.exports = createRule({
     };
   },
 });
-

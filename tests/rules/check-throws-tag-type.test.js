@@ -295,6 +295,50 @@ ruleTester.run(
     invalid: [
       {
         code: `
+          /** @throws {Promise<TypeError>} */
+          async function example(): Promise<void> {
+            await new Promise<void>((resolve, reject) => {
+              reject(new Error('failure'));
+            });
+          }
+        `,
+        output: `
+          /** @throws {Promise<Error>} */
+          async function example(): Promise<void> {
+            await new Promise<void>((resolve, reject) => {
+              reject(new Error('failure'));
+            });
+          }
+        `,
+        errors: [{ messageId: 'throwTypeMismatch' }],
+      },
+      {
+        code: `
+          /** @throws {Promise<TypeError>} */
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = new Promise<void>((resolve, reject) => {
+                reject(new Error('failure'));
+              });
+            }
+            return await pending;
+          }
+        `,
+        output: `
+          /** @throws {Promise<Error>} */
+          async function example(pending?: Promise<void>): Promise<void> {
+            if (!pending) {
+              pending = new Promise<void>((resolve, reject) => {
+                reject(new Error('failure'));
+              });
+            }
+            return await pending;
+          }
+        `,
+        errors: [{ messageId: 'throwTypeMismatch' }],
+      },
+      {
+        code: `
           /**
            * foo bar baz
            *
@@ -1896,4 +1940,3 @@ ruleTester.run(
     ],
   },
 );
-
